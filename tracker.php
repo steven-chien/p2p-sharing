@@ -23,20 +23,21 @@ $d[$peer_id] = array(
 file_put_contents("/dev/shm/p2p", serialize($d));
 
 $no = 0;
-$ret = array();
+$ret = "{peers:[";
+$first = true;
 foreach($d as $__peer_id => $data) {
     if ($__peer_id == $peer_id) continue;
     if ($no == 10) break;
     if ($data['info_hash'] == $info_hash) {
-        $ret[] = array(
-            'ip' => $data['ip'],
-            'port' => $data['port']
-        );
+        if (!$first) $ret .= ",";
+        $ret .= "{ip:\"".$data['ip']."\", port:".$data['port']."}";
+        
+        $first = false;
     }
 }
 
 header("Content-type: application/json");
-die(json_encode($ret));
+die($ret."]}");
 
 function valdata($g, $fixed_size=true) {
 	if (!isset($_GET[$g])) {
