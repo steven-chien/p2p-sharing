@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+import java.net.*;
 import org.json.*;
 
 class FileSync
@@ -17,5 +18,9 @@ class FileSync
 			JSONObject peerObj = peerList.getJSONObject(i);
 			System.out.println(peerObj.getString("ip")+";"+peerObj.getInt("port"));
 		}
+	}
+
+	public void newPeer(Socket socket) {
+		peers.add(new Peer(socket));
 	}
 }
