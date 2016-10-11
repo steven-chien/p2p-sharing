@@ -9,7 +9,7 @@ class P2PFile extends FSNode
 	File file;
 	long totalSize;
 	long blockCount;
-	long lastBlockSize;
+	int lastBlockSize;
 	byte[][] hash;
 
 	public P2PFile(String path) throws Exception {
@@ -20,7 +20,7 @@ class P2PFile extends FSNode
 		long modSize = (totalSize % (long)Math.pow(2, 18));
 		blockCount = (totalSize - modSize) / (long)Math.pow(2, 18);
 		if(modSize!=0) {
-			this.lastBlockSize = modSize;
+			this.lastBlockSize = (int) modSize;
 			blockCount++;
 		}
 
@@ -31,17 +31,39 @@ class P2PFile extends FSNode
 		hash = new byte[(int)blockCount][];
 		for(int i=0; i<blockCount; i++) {
 			int readCount = (int)Math.pow(2, 18);
-			byte[] buffer = new byte[readCount];
+            
+            if (lastBlockSize != 0 && i+1 == blockCount) {
+                System.err.println("This is the last block:");
+                readCount = lastBlockSize;
+            }
+            
+            int blockSize = readCount;
+            
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			int read;
 			while(readCount>0) {
-				read = stream.read(buffer, (((int)Math.pow(2, 18))-readCount)+i, readCount);
-				System.err.println(" offset: "+(((int)Math.pow(2, 18))+i,readCount));
+                byte[] buffer = new byte[readCount];
+                System.err.println(" offset: "+(blockSize-readCount)+" Readcunt: "+readCount);
+				read = stream.read(buffer, (blockSize-readCount), readCount);
 				outputStream.write(buffer, 0, read);
 				readCount -= read;
 			}
 			hash[i] = hashSum.digest(outputStream.toByteArray());
-			System.err.println("hash "+i+": "+Arrays.toString(hash[i]));
+			System.err.println("hash "+i+": "+bytesToHex(hash[i]));
 		}
 	}
+    
+    /*
+     * Used for debugging; This method is stolen from Stack Overflow
+     */
+    final protected char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
 }
