@@ -6,8 +6,9 @@ public class Sharing
 	public static void main(String[] args) {
 
 		try {
-			P2PFile file = new P2PFile("./test");
-            System.err.println(bytesToHex(file.getBlock(hexStringToByteArray("C035974989C68B7829A393046ECC33E35C09370FA0A26F969CF93ED2D98DB1C6"))));
+//			P2PFile file = new P2PFile("./test");
+//            System.err.println(bytesToHex(file.getBlock(hexStringToByteArray("C035974989C68B7829A393046ECC33E35C09370FA0A26F969CF93ED2D98DB1C6"))));
+	    		P2PFolder folder = new P2PFolder("./testFolder");
 		}
 		catch(Exception ex) {
 			System.err.println("Exception: "+ex.toString());
