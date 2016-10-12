@@ -13,6 +13,9 @@ class P2PFolder extends FSNode
 	}
 
 	public P2PFolder(File file) throws Exception {
+        	if (!file.exists()) throw new Exception("This file does not exist on disk");
+	        if (!file.isDirectory()) throw new Exception("This is not a folder.");
+
 		this.path = file.getAbsolutePath();;
 		File folder = new File(path);
 		
