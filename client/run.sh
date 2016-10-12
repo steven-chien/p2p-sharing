@@ -1,4 +1,3 @@
 #!/bin/bash
 reset
-javac -cp '.:org.json.jar' *.java
-java Sharing
+javac -cp '.:org.json.jar' *.java && java Sharing

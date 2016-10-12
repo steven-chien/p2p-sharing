@@ -51,7 +51,47 @@ class P2PFile extends FSNode
 			hash[i] = hashSum.digest(outputStream.toByteArray());
 			System.err.println("hash "+i+": "+bytesToHex(hash[i]));
 		}
+        stream.close();
 	}
+    
+    public byte[] getBlock(int block) throws Exception {
+        FileInputStream stream = new FileInputStream(this.path);
+        int readCount = (int)Math.pow(2, 18);
+        stream.skip((readCount * ((long) block)));
+        if (block+1 == blockCount) readCount = lastBlockSize;
+        
+        byte[] buffer = new byte[readCount];
+        
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        
+        int read;
+        while(readCount>0) {
+            buffer = new byte[readCount];
+            read = stream.read(buffer, 0, readCount);
+            outputStream.write(buffer, 0, read);
+            readCount -= read;
+        }
+        
+        stream.close();
+        return outputStream.toByteArray();
+    }
+    
+    public byte[] getBlock(byte[] getHash) throws Exception {
+        int block = 0;
+        for (byte[] str : hash) {
+            System.err.println("Comparing "+bytesToHex(str));
+            System.err.println("to        "+bytesToHex(getHash)+"\n");
+            if (Arrays.equals(str, getHash)) {
+                return getBlock(block);
+            }
+            ++block;
+        }
+        return null;
+    }
+    
+    public byte[][] getHashes() {
+        return hash;
+    }
     
     /*
      * Used for debugging; This method is stolen from Stack Overflow
