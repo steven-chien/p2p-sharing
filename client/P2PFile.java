@@ -12,9 +12,16 @@ class P2PFile extends FSNode
 	int lastBlockSize;
 	byte[][] hash;
 
-	public P2PFile(String path) throws Exception {
-		this.path = path;
-		this.file = new File(path);
+    public P2PFile(String path) throws Exception {
+        this(new File(path));
+    }
+
+	public P2PFile(File file) throws Exception {
+        if (!file.exists()) throw new Exception("This file does not exist on disk");
+        if (!file.isFile()) throw new Exception("This file is not a file, maybe it is a folder?");
+        
+        this.file = file;
+        this.path = file.getAbsolutePath();
 		this.totalSize = this.file.length();
 
 		long modSize = (totalSize % (long)Math.pow(2, 18));
