@@ -6,7 +6,6 @@ import org.json.*;
 
 class P2PFile extends FSNode
 {
-	String path;
 	File file;
 	long totalSize;
 	long blockCount;
@@ -101,6 +100,7 @@ class P2PFile extends FSNode
         return hash;
     }
 
+    @Override
     public JSONObject toJSON() {
 	    JSONObject json = new JSONObject();
 	    json.put("path", this.path);

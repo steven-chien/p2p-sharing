@@ -1,11 +1,11 @@
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+import org.json.*;
 
 class P2PFolder extends FSNode
 {
 	private int fileCount;
-	private String path;
 	private ArrayList<FSNode> fileList;
 
 	public P2PFolder(String path) throws Exception {
@@ -27,18 +27,34 @@ class P2PFolder extends FSNode
 			else System.err.println("Neither a file or a dir...");
 		}
 	}
-
+    
+    @Override
     public JSONObject toJSON() {
-	    JSONObject json = new JSONObject();
-	    json.put("path", this.path);
-	    json.put("size", this.totalSize);
-	    JSONArray fileHashes = new JSONArray();
-	    for(byte[] blockHash : hash) {
-		    fileHashes.put(bytesToHex(blockHash));
-	    }
-	    json.put("hashes", fileHashes);
+        JSONArray files = new JSONArray();
+        JSONArray folders = new JSONArray();
+        return this.toJSON(folders, files);
+    }
 
-	    return json;
+    @Override
+    public JSONObject toJSON(JSONArray folders, JSONArray files) {
+        
+        folders.put(this.path);
+        
+        for(FSNode fsNode : fileList) {
+            if (fsNode instanceof P2PFolder) {
+                fsNode.toJSON(folders, files);
+            }
+            
+            if (fsNode instanceof P2PFile) {
+                files.put(fsNode.toJSON());
+            }
+            
+        }
+        
+	    JSONObject ret = new JSONObject();
+        ret.put("files", files);
+        ret.put("folders", folders);
+	    return ret;
     }
  
 }
