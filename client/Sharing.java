@@ -11,19 +11,10 @@ public class Sharing
 	//            System.err.println(bytesToHex(file.getBlock(hexStringToByteArray("C035974989C68B7829A393046ECC33E35C09370FA0A26F969CF93ED2D98DB1C6"))));
 	    		//P2PFolder folder = new P2PFolder("./testFolder");
 			//System.err.println(folder.toJSON().toString(2));
+			Publish f = new Publish("./testFolder");
+			System.err.println(f.getMetaData());
             
             
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(2048);
-            KeyPair kp = kpg.genKeyPair();
-            
-            PublicKey publicKey = kp.getPublic();
-            PrivateKey privateKey = kp.getPrivate();
-            
-            System.err.println(bytesToHex(privateKey.getEncoded()));
-            System.err.println(publicKey.getEncoded());
-            
-            System.exit(0);
 		}
 		catch(Exception ex) {
 			System.err.println("Exception: "+ex.toString());
