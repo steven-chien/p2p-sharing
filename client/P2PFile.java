@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 import java.security.*;
+import org.json.*;
 
 class P2PFile extends FSNode
 {
@@ -21,7 +22,7 @@ class P2PFile extends FSNode
         if (!file.isFile()) throw new Exception("This file is not a file, maybe it is a folder?");
         
         this.file = file;
-        this.path = file.getAbsolutePath();
+        this.path = file.getPath();
 		this.totalSize = this.file.length();
 
 		long modSize = (totalSize % (long)Math.pow(2, 18));
@@ -98,6 +99,19 @@ class P2PFile extends FSNode
     
     public byte[][] getHashes() {
         return hash;
+    }
+
+    public JSONObject toJSON() {
+	    JSONObject json = new JSONObject();
+	    json.put("path", this.path);
+	    json.put("size", this.totalSize);
+	    JSONArray fileHashes = new JSONArray();
+	    for(byte[] blockHash : hash) {
+		    fileHashes.put(bytesToHex(blockHash));
+	    }
+	    json.put("hashes", fileHashes);
+
+	    return json;
     }
     
     /*

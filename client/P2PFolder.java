@@ -16,7 +16,7 @@ class P2PFolder extends FSNode
         	if (!file.exists()) throw new Exception("This file does not exist on disk");
 	        if (!file.isDirectory()) throw new Exception("This is not a folder.");
 
-		this.path = file.getAbsolutePath();;
+		this.path = file.getPath();
 		File folder = new File(path);
 		
 		fileList = new ArrayList<FSNode>(folder.listFiles().length);
@@ -27,4 +27,18 @@ class P2PFolder extends FSNode
 			else System.err.println("Neither a file or a dir...");
 		}
 	}
+
+    public JSONObject toJSON() {
+	    JSONObject json = new JSONObject();
+	    json.put("path", this.path);
+	    json.put("size", this.totalSize);
+	    JSONArray fileHashes = new JSONArray();
+	    for(byte[] blockHash : hash) {
+		    fileHashes.put(bytesToHex(blockHash));
+	    }
+	    json.put("hashes", fileHashes);
+
+	    return json;
+    }
+ 
 }
