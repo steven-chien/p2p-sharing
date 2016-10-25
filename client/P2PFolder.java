@@ -21,10 +21,10 @@ class P2PFolder extends FSNode
 		
 		fileList = new ArrayList<FSNode>(folder.listFiles().length);
 		for(File f : folder.listFiles()) {
-			System.err.println(f.getName());
+			//System.err.println(f.getName());
 			if(f.isDirectory()) fileList.add(new P2PFolder(f));
 			else if(f.isFile()) fileList.add(new P2PFile(f));
-			else System.err.println("Neither a file or a dir...");
+			//else System.err.println("Neither a file or a dir...");
 		}
 	}
     

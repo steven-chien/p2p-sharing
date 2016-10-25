@@ -31,7 +31,7 @@ class P2PFile extends FSNode
 			blockCount++;
 		}
 
-		System.err.println("path:"+this.path+"; totalSize: "+totalSize+"; blockCount: "+blockCount+"; last block size: "+this.lastBlockSize);
+		//System.err.println("path:"+this.path+"; totalSize: "+totalSize+"; blockCount: "+blockCount+"; last block size: "+this.lastBlockSize);
 
 		FileInputStream stream = new FileInputStream(this.path);
 		MessageDigest hashSum = MessageDigest.getInstance("SHA-256");
@@ -40,7 +40,7 @@ class P2PFile extends FSNode
 			int readCount = (int)Math.pow(2, 18);
             
             if (lastBlockSize != 0 && i+1 == blockCount) {
-                System.err.println("This is the last block:");
+                //System.err.println("This is the last block:");
                 readCount = lastBlockSize;
             }
             
@@ -50,13 +50,13 @@ class P2PFile extends FSNode
 			int read;
 			while(readCount>0) {
                 byte[] buffer = new byte[readCount];
-                System.err.println(" offset: "+(blockSize-readCount)+" Readcunt: "+readCount);
+                //System.err.println(" offset: "+(blockSize-readCount)+" Readcunt: "+readCount);
 				read = stream.read(buffer, (blockSize-readCount), readCount);
 				outputStream.write(buffer, 0, read);
 				readCount -= read;
 			}
 			hash[i] = hashSum.digest(outputStream.toByteArray());
-			System.err.println("hash "+i+": "+bytesToHex(hash[i]));
+			//System.err.println("hash "+i+": "+bytesToHex(hash[i]));
 		}
         stream.close();
 	}
@@ -86,8 +86,8 @@ class P2PFile extends FSNode
     public byte[] getBlock(byte[] getHash) throws Exception {
         int block = 0;
         for (byte[] str : hash) {
-            System.err.println("Comparing "+bytesToHex(str));
-            System.err.println("to        "+bytesToHex(getHash)+"\n");
+            //System.err.println("Comparing "+bytesToHex(str));
+            //System.err.println("to        "+bytesToHex(getHash)+"\n");
             if (Arrays.equals(str, getHash)) {
                 return getBlock(block);
             }

@@ -12,7 +12,6 @@ public class Sharing
 	    		//P2PFolder folder = new P2PFolder("./testFolder");
 			//System.err.println(folder.toJSON().toString(2));
 			Publish f = new Publish("./testFolder");
-			System.err.println(f.getMetaData());
             
             
 		}

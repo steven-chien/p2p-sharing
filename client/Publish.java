@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 import java.security.*;
+import java.security.spec.*;
 import org.json.*;
 
 class Publish
@@ -26,22 +27,24 @@ class Publish
 		folder = new P2PFolder(absolutePath);
 		this.revision = revision;
 		metaData = folder.toJSON();
+        
+        if (!(new File(folder.path+".json").exists())) {
+            /* get key pairs */
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048);
+            KeyPair kp = kpg.genKeyPair();
+            revision = 0;
 
-		/* get key pairs */
-		KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-		kpg.initialize(2048);
-		KeyPair kp = kpg.genKeyPair();
-
-		publicKey = kp.getPublic();
-		privateKey = kp.getPrivate();
-
-		/* sign meta data */
-		signatureBytes = signData(hexStringToByteArray(metaData.toString()), privateKey);
-		System.out.println("Singature:" + bytesToHex(signatureBytes));
-		System.out.println("verify: "+verifyData(hexStringToByteArray(metaData.toString()), signatureBytes, publicKey));
-
-		/* save config */
-		saveConfig();
+            publicKey = kp.getPublic();
+            privateKey = kp.getPrivate();
+            signatureBytes = signData(hexStringToByteArray(metaData.toString()), privateKey);
+            saveConfig();
+        } else {
+            loadConfig();
+        }
+        
+        
+        
 	}
 
 	private byte[] signData(byte[] data, PrivateKey privateKey) throws Exception {
@@ -58,13 +61,22 @@ class Publish
 		return signature.verify(sigBytes);
 	}
 
-	private void saveConfig() {
+	private void saveConfig() throws Exception {
 		JSONObject config = new JSONObject();
-		config.put("publicKey", bytesToHex(publicKey.getEncoded()));
-		config.put("privateKey", bytesToHex(privateKey.getEncoded()));
-		System.err.println(config.toString());
-		System.err.println();
+		config.put("publicKey", savePublicKey(publicKey));
+		config.put("privateKey", savePrivateKey(privateKey));
+        config.put("revision", revision);
+        PrintWriter pw = new PrintWriter(folder.path + ".json"); 
+        pw.print(config.toString());
+        pw.close();
 	}
+    
+    private void loadConfig() throws Exception {
+        JSONObject json = new JSONObject(readFile(folder.path+".json"));
+        privateKey = loadPrivateKey(json.getString("privateKey"));
+        publicKey = loadPublicKey(json.getString("publicKey"));
+        revision = json.getLong("revision");
+    }
 
 	public String getMetaData() {
 		JSONObject json = new JSONObject();
@@ -96,4 +108,59 @@ class Publish
 		}
 		return data;
 	}
+    
+    /*
+     * Stolen from Stack Overflow
+     */
+    public String readFile(String fileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
+    }
+    
+    public PrivateKey loadPrivateKey(String key64) throws GeneralSecurityException {
+        byte[] clear = hexStringToByteArray(key64);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear);
+        KeyFactory fact = KeyFactory.getInstance("RSA");
+        PrivateKey priv = fact.generatePrivate(keySpec);
+        Arrays.fill(clear, (byte) 0);
+        return priv;
+    }
+
+
+    public PublicKey loadPublicKey(String stored) throws GeneralSecurityException {
+        byte[] data = hexStringToByteArray(stored);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
+        KeyFactory fact = KeyFactory.getInstance("RSA");
+        return fact.generatePublic(spec);
+    }
+
+    public String savePrivateKey(PrivateKey priv) throws GeneralSecurityException {
+        KeyFactory fact = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec spec = fact.getKeySpec(priv,
+                PKCS8EncodedKeySpec.class);
+        byte[] packed = spec.getEncoded();
+        String key64 = bytesToHex(packed);
+
+        Arrays.fill(packed, (byte) 0);
+        return key64;
+    }
+
+    public String savePublicKey(PublicKey publ) throws GeneralSecurityException {
+        KeyFactory fact = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec spec = fact.getKeySpec(publ,
+                X509EncodedKeySpec.class);
+        return bytesToHex(spec.getEncoded());
+    }
 }
