@@ -39,20 +39,31 @@ class Publish
 		signatureBytes = signData(hexStringToByteArray(metaData.toString()), privateKey);
 		System.out.println("Singature:" + bytesToHex(signatureBytes));
 		System.out.println("verify: "+verifyData(hexStringToByteArray(metaData.toString()), signatureBytes, publicKey));
+
+		/* save config */
+		saveConfig();
 	}
 
-	public byte[] signData(byte[] data, PrivateKey privateKey) throws Exception {
+	private byte[] signData(byte[] data, PrivateKey privateKey) throws Exception {
 		Signature signature = Signature.getInstance("SHA256withRSA");
 		signature.initSign(privateKey);
 		signature.update(data);
 		return signature.sign();
 	}
 
-	public boolean verifyData(byte[] data, byte[] sigBytes, PublicKey publicKey) throws Exception {
+	private boolean verifyData(byte[] data, byte[] sigBytes, PublicKey publicKey) throws Exception {
 		Signature signature = Signature.getInstance("SHA256withRSA");
 		signature.initVerify(publicKey);
 		signature.update(data);
 		return signature.verify(sigBytes);
+	}
+
+	private void saveConfig() {
+		JSONObject config = new JSONObject();
+		config.put("publicKey", bytesToHex(publicKey.getEncoded()));
+		config.put("privateKey", bytesToHex(privateKey.getEncoded()));
+		System.err.println(config.toString());
+		System.err.println();
 	}
 
 	public String getMetaData() {
