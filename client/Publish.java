@@ -24,7 +24,7 @@ class Publish
 	public Publish(String absolutePath, long revision) throws Exception {
 		/* create root folder object */
 		folder = new P2PFolder(absolutePath);
-		revision = revision;
+		this.revision = revision;
 		metaData = folder.toJSON();
 
 		/* get key pairs */
@@ -42,6 +42,14 @@ class Publish
 		signatureBytes = sig.sign();
 
 		System.out.println("Singature:" + bytesToHex(signatureBytes));
+
+		Signature sigVerify = Signature.getInstance("SHA1WithRSA");
+
+		sigVerify.initVerify(publicKey);
+		sigVerify.update(hexStringToByteArray(metaData.toString()));
+		boolean state = sig.verify(signatureBytes);
+		//System.err.println("verify:"+state);
+
 	}
 
 	public String getMetaData() {
