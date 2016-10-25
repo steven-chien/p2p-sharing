@@ -36,20 +36,23 @@ class Publish
 		privateKey = kp.getPrivate();
 
 		/* sign meta data */
-		sig = Signature.getInstance("SHA1WithRSA");
-		sig.initSign(privateKey);
-		sig.update(hexStringToByteArray(metaData.toString()));
-		signatureBytes = sig.sign();
-
+		signatureBytes = signData(hexStringToByteArray(metaData.toString()), privateKey);
 		System.out.println("Singature:" + bytesToHex(signatureBytes));
+		System.out.println("verify: "+verifyData(hexStringToByteArray(metaData.toString()), signatureBytes, publicKey));
+	}
 
-		Signature sigVerify = Signature.getInstance("SHA1WithRSA");
+	public byte[] signData(byte[] data, PrivateKey privateKey) throws Exception {
+		Signature signature = Signature.getInstance("SHA256withRSA");
+		signature.initSign(privateKey);
+		signature.update(data);
+		return signature.sign();
+	}
 
-		sigVerify.initVerify(publicKey);
-		sigVerify.update(hexStringToByteArray(metaData.toString()));
-		boolean state = sig.verify(signatureBytes);
-		//System.err.println("verify:"+state);
-
+	public boolean verifyData(byte[] data, byte[] sigBytes, PublicKey publicKey) throws Exception {
+		Signature signature = Signature.getInstance("SHA256withRSA");
+		signature.initVerify(publicKey);
+		signature.update(data);
+		return signature.verify(sigBytes);
 	}
 
 	public String getMetaData() {
