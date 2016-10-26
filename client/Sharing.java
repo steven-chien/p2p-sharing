@@ -6,20 +6,29 @@ public class Sharing
 {
 	public static void main(String[] args) {
 
-		try {
-			//P2PFile file = new P2PFile("./test");
-	//            System.err.println(bytesToHex(file.getBlock(hexStringToByteArray("C035974989C68B7829A393046ECC33E35C09370FA0A26F969CF93ED2D98DB1C6"))));
-	    		//P2PFolder folder = new P2PFolder("./testFolder");
-			//System.err.println(folder.toJSON().toString(2));
-			Publish f = new Publish("./testFolder");
+		Publish publish = null;
+		Tracker tracker = new Tracker("caprioli.se", 1337, "01234567890123456789012345678912", "22134567810323436789012345678914", "01234567890123456789012345678912");
+		FileSync fileSync;
+
+		if(args.length>1) {
+			try {
+				//P2PFile file = new P2PFile("./test");
+	//      	      System.err.println(bytesToHex(file.getBlock(hexStringToByteArray("C035974989C68B7829A393046ECC33E35C09370FA0A26F969CF93ED2D98DB1C6"))));
+	    			//P2PFolder folder = new P2PFolder("./testFolder");
+				//System.err.println(folder.toJSON().toString(2));
+				publish = new Publish("./testFolder");
+			}
+			catch(Exception ex) {
+				System.err.println("Exception: "+ex.toString());
+				System.exit(1);
+			}
+
+			fileSync = new FileSync(tracker, publish);
 		}
-		catch(Exception ex) {
-			System.err.println("Exception: "+ex.toString());
-			System.exit(1);
+		else {
+			fileSync = new FileSync(tracker);
 		}
 
-		Tracker tracker = new Tracker("caprioli.se", 1337, "01234567890123456789012345678912", "12134567810323436789012345678914", "01234567890123456789012345678912");
-		FileSync fileSync = new FileSync(tracker);
 		(new Thread(new Listener(1337, fileSync))).start();
 
 		System.out.println(tracker.getPeers().toString());
