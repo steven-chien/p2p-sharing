@@ -37,8 +37,8 @@ class FileSync
 	}
 
 	public synchronized void getFile(PrintWriter out, BufferedReader in, String path, int blockCount) throws Exception {
-		File file = new File(path);
-		PrintWriter pw = new PrintWriter(file);
+		File file = new File(path); //Create the file
+		FileOutputStream pw = new FileOutputStream(path);
 		try {
 			StringBuilder builder = new StringBuilder();
 	
@@ -48,8 +48,11 @@ class FileSync
 				out.println(i);
 				builder.append(in.readLine());
 			}
-	
-			pw.print(builder.toString());
+
+			pw.write(
+				Sharing.hexStringToByteArray(builder.toString())
+			);
+
 		} catch(Exception e) {
 			System.err.println("Exception when send file: " + e.toString());
 		} finally {
@@ -68,7 +71,7 @@ class FileSync
 
 				//for(JSONString folder : folderList) {
 				for(int i=0; i<folderList.length(); i++) {
-					(new File(folderList.getJSONObject(i).toString())).mkdir();
+					(new File(folderList.getString(i))).mkdir();
 				}
 
 				for(int i=0; i<fileList.length(); i++) {
