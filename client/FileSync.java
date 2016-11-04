@@ -36,6 +36,15 @@ class FileSync
 		}
 	}
 
+	public synchronized void update(String data) {
+		try {
+			metaData = new JSONObject(data);
+			System.err.println("Updated metadata from other peer");
+		} catch (Exception e){
+			System.err.println("Failed to decode data from peer: " + e.toString());
+		}
+	}
+
 	public synchronized void newPeer(Socket socket) {
 		peers.add(new Peer(socket, this));
 	}

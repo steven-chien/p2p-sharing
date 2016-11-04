@@ -59,5 +59,11 @@ class Peer implements Runnable
 
 	public void handleCommand(String command, String data) {
 		System.err.println("Got command "+command);
+		System.err.println("Got Data "+data);
+
+		if (command.equals("update")) {
+			fileSync.update(data);
+		}
+
 	}
 }
