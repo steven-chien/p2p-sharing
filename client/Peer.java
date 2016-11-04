@@ -71,8 +71,8 @@ class Peer implements Runnable
 				/* if the peer just received latest update push the update to others */
 				if(updated) {
 					for(Peer peer : fileSync.getPeers()) {
-						out.println("update");
-						out.println(data);
+						peer.out.println("update");
+						peer.out.println(data);
 					}
 				}
 			}
