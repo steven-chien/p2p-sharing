@@ -70,6 +70,10 @@ class Peer implements Runnable
 
 				/* if the peer just received latest update push the update to others */
 				if(updated) {
+					/* check for file changes */
+					//JSONObject obj = new JSONObject(data);
+					//JSONObject fileList = obj.
+
 					for(Peer peer : fileSync.getPeers()) {
 						peer.out.println("update");
 						peer.out.println(data);
@@ -84,6 +88,8 @@ class Peer implements Runnable
 			System.err.println("Block No "+blockNo);
 			if (P2PFile.files != null) {
 				for(P2PFile file : P2PFile.files) {
+					System.err.println("Getting : " + file.path);
+					System.err.println("Data: " +  data);
 					if (file.path.equals(data)) {
 						out.println(bytesToHex(file.getBlock(blockNo)));
 						System.err.println("Block was sent to client");
