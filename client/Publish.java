@@ -20,7 +20,6 @@ class Publish
 
 	public Publish(String absolutePath) throws Exception {
 		this(absolutePath, 0);
-		System.err.println("not publishing");
 	}
 
 	public Publish(String absolutePath, long revision) throws Exception {

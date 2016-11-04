@@ -22,7 +22,9 @@ class Peer implements Runnable
 		this.fileSync = fileSync;
 		try {
 			setup();
-		} catch (Exception e){}
+		} catch (Exception e){
+			System.err.println("Exception: " + e.toString());
+		}
 	}
 
 	public void setup() throws Exception {
@@ -30,8 +32,8 @@ class Peer implements Runnable
 		out = new PrintWriter(socket.getOutputStream(), true);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-		if (fileSync != null) {
-			System.err.println("Sending metadata to peer");
+		if (fileSync.publish != null) {
+			System.err.println("Sending metadata to peer: " + fileSync.publish.getMetaData());
 			out.println("update");
 			out.println(fileSync.publish.getMetaData());
 			out.flush();
