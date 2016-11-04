@@ -9,7 +9,7 @@ class FileSync
 	Tracker tracker;
 	private ArrayList<Peer> peers;
 	private JSONObject metaData;
-	Publish publish;
+	public Publish publish;
 
 	public FileSync(Tracker tracker) {
 		this(tracker, null);
