@@ -36,13 +36,24 @@ class FileSync
 		}
 	}
 
-	public synchronized void update(String data) {
+	public synchronized boolean update(String data) {
 		try {
-			metaData = new JSONObject(data);
-			System.err.println("Updated metadata from other peer");
+			if(metaData==null || !metaData.toString().equals(data)) {
+				metaData = new JSONObject(data);
+				System.err.println("Updated metadata from other peer");
+				return true;
+			}
+			else {
+				System.err.println("got metadata from other peer but already have the latest version will not update");
+			}
 		} catch (Exception e){
 			System.err.println("Failed to decode data from peer: " + e.toString());
 		}
+		return false;
+	}
+
+	public synchronized ArrayList<Peer> getPeers() {
+		return peers;
 	}
 
 	public synchronized void newPeer(Socket socket) {

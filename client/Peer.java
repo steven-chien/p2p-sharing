@@ -63,8 +63,19 @@ class Peer implements Runnable
 		System.err.println("Got command "+command);
 		System.err.println("Got Data "+data);
 
+		/* publisher should not be updated */
 		if (command.equals("update")) {
-			fileSync.update(data);
+			if(fileSync.publish==null) {
+				boolean updated = fileSync.update(data);
+
+				/* if the peer just received latest update push the update to others */
+				if(updated) {
+					for(Peer peer : fileSync.getPeers()) {
+						out.println("update");
+						out.println(data);
+					}
+				}
+			}
 		}
 
 		if (command.equals("getblock")) {
@@ -84,8 +95,8 @@ class Peer implements Runnable
 			System.err.println("Invalid block, sending NOOP");
 			out.println("NODATA");
 		}
-
 	}
+
     /*
      * Used for debugging; This method is stolen from Stack Overflow
      */
