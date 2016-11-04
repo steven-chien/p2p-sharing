@@ -54,15 +54,35 @@ class Peer implements Runnable
 				data = in.readLine();
 				handleCommand(command, data);
 			}
-		} catch(Exception e){}
+		} catch(Exception e){
+			System.err.println("Exception in Peer run(): " + e.toString());
+		}
 	}
 
-	public void handleCommand(String command, String data) {
+	public void handleCommand(String command, String data) throws Exception {
 		System.err.println("Got command "+command);
 		System.err.println("Got Data "+data);
 
 		if (command.equals("update")) {
 			fileSync.update(data);
+		}
+
+		if (command.equals("getblock")) {
+			System.err.println("Peer requested a block");
+			int blockNo = Integer.parseInt(in.readLine());
+			System.err.println("Block No "+blockNo);
+			if (P2PFile.files != null) {
+				for(P2PFile file : P2PFile.files) {
+					if (file.path.equals(data)) {
+						out.println(file.getBlock(blockNo));
+						System.err.println("Block was sent to client");
+						return;
+					}
+				}
+			}
+
+			System.err.println("Invalid block, sending NOOP");
+			out.println("NODATA");
 		}
 
 	}

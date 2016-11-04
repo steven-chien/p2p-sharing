@@ -11,6 +11,7 @@ class P2PFile extends FSNode
 	long blockCount;
 	int lastBlockSize;
 	byte[][] hash;
+    static List<P2PFile> files;
 
     public P2PFile(String path) throws Exception {
         this(new File(path));
@@ -59,6 +60,7 @@ class P2PFile extends FSNode
 			//System.err.println("hash "+i+": "+bytesToHex(hash[i]));
 		}
         stream.close();
+        files.add(this);
 	}
     
     public byte[] getBlock(int block) throws Exception {
