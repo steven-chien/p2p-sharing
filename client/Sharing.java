@@ -7,7 +7,7 @@ public class Sharing
 	public static void main(String[] args) {
 
 		Publish publish = null;
-		Tracker tracker = new Tracker("caprioli.se", 1337, "01234567890123456789012345678912", "23134567810323436789012345670914", "01234567890123456789012345678912");
+		Tracker tracker = new Tracker("caprioli.se", 1337, "01234567890123456789012345678912", randString(32), "01234567890123456789012345678912");
 		FileSync fileSync;
 
 		if(args.length>0) {
@@ -61,5 +61,18 @@ public class Sharing
                                  + Character.digit(s.charAt(i+1), 16));
         }
         return data;
+    }
+
+    /*
+     * Method from http://stackoverflow.com/questions/14622622/generating-a-random-hex-string-of-length-50-in-java-me-j2me
+     */
+    private static String randString(int numchars){
+        Random r = new Random();
+        StringBuffer sb = new StringBuffer();
+        while(sb.length() < numchars){
+            sb.append(Integer.toHexString(r.nextInt()));
+        }
+
+        return sb.toString().substring(0, numchars);
     }
 }
