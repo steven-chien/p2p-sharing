@@ -29,7 +29,7 @@ class Publish
 		this.revision = revision;
 		metaData = folder.toJSON();
         
-        if (!(new File(folder.path+".json").exists())) {
+//        if (!(new File(folder.path+".json").exists())) {
             /* get key pairs */
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
             kpg.initialize(2048);
@@ -40,9 +40,9 @@ class Publish
             privateKey = kp.getPrivate();
             signatureBytes = signData(hexStringToByteArray(metaData.toString()), privateKey);
             saveConfig();
-        } else {
-            loadConfig();
-        }
+//        } else {
+            //loadConfig();
+//        }
         
         
         
