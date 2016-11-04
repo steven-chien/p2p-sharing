@@ -36,7 +36,7 @@ class FileSync
 		}
 	}
 
-	public synchronized void sendFile(PrintWriter out, BufferedReader in, String path, int blockCount) throws Exception {
+	public synchronized void getFile(PrintWriter out, BufferedReader in, String path, int blockCount) throws Exception {
 		File file = new File(path);
 		PrintWriter pw = new PrintWriter(file);
 		try {
@@ -64,10 +64,18 @@ class FileSync
 
 				JSONObject obj = metaData.getJSONObject("metadata");
 				JSONArray folderList = obj.getJSONArray("folders");
+				JSONArray fileList = obj.getJSONArray("files");
 
 				//for(JSONString folder : folderList) {
 				for(int i=0; i<folderList.length(); i++) {
 					(new File(folderList.getJSONObject(i).toString())).mkdir();
+				}
+
+				for(int i=0; i<fileList.length(); i++) {
+					String filePath = obj.getJSONArray("files").getJSONObject(i).getString("path");
+					for(Peer peer : peers) {
+						getFile(peer.out, peer.in, filePath, fileList.getJSONObject(i).getJSONArray("hashes").length());
+					}
 				}
 
 				System.err.println("Updated metadata from other peer");
