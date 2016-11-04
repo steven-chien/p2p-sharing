@@ -29,11 +29,6 @@ class FileSync
 			JSONObject peerObj = peerList.getJSONObject(i);
 			try {
 				Socket socket = new Socket(peerObj.getString("ip"), peerObj.getInt("port"));
-				if(publish!=null) {
-					PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-					pw.println(publish.getMetaData());
-				}
-
 				newPeer(socket);
 			} catch(Exception e) {
 				System.out.println("Unable to connect to peer, exception: "+e.toString());
@@ -42,7 +37,7 @@ class FileSync
 	}
 
 	public synchronized void newPeer(Socket socket) {
-		peers.add(new Peer(socket));
+		peers.add(new Peer(socket, this));
 	}
 
 }

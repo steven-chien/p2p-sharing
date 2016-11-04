@@ -7,6 +7,8 @@ class Peer implements Runnable
 {
 	FileSync fileSync;
 	Socket socket;
+	PrintWriter out;
+	BufferedReader in;
 
 	public Peer(String ip, int port, FileSync fileSync) throws Exception {
 		this.fileSync = fileSync;
@@ -15,20 +17,34 @@ class Peer implements Runnable
 		setup();
 	}
 
-	public Peer(Socket socket) {
+	public Peer(Socket socket, FileSync fileSync) {
 		this.socket = socket;
-		setup();
+		this.fileSync = fileSync;
+		try {
+			setup();
+		} catch (Exception e){}
 	}
 
-	public void setup() {
+	public void setup() throws Exception {
+
+		out = new PrintWriter(socket.getOutputStream(), true);
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+		if (fileSync != null) {
+			System.err.println("Sending metadata to peer");
+			out.println("update");
+			out.println(fileSync.publish.getMetaData());
+			out.flush();
+		} else {
+			System.err.println("Dont have any metadata, will not sent to peer");
+		}
+
 		(new Thread(this)).start();
 		// (new Thread(new Listener(1337, fileSync))).start();
 	}
 
 	public void run() {
 		try {
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in =	new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 			String data;
 			String command;
