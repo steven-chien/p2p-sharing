@@ -7,7 +7,7 @@ import org.json.*;
 class FileSync
 {
 	Tracker tracker;
-	private ArrayList<Socket> peers;
+	private ArrayList<Peer> peers;
 	private JSONObject metaData;
 	Publish publish;
 
@@ -19,7 +19,7 @@ class FileSync
 		this.tracker = tracker;
 		this.publish = publish;
 
-		peers = new ArrayList<Socket>();
+		peers = new ArrayList<Peer>();
 
 		JSONArray peerList = tracker.getPeers().getJSONArray("peers");
 		System.err.println("peer list: "+peerList.toString());
@@ -42,7 +42,7 @@ class FileSync
 	}
 
 	public synchronized void newPeer(Socket socket) {
-		peers.add(socket);
+		peers.add(new Peer(socket));
 	}
 
 }
