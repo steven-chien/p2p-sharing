@@ -74,7 +74,7 @@ class Peer implements Runnable
 			if (P2PFile.files != null) {
 				for(P2PFile file : P2PFile.files) {
 					if (file.path.equals(data)) {
-						out.println(file.getBlock(blockNo));
+						out.println(bytesToHex(file.getBlock(blockNo)));
 						System.err.println("Block was sent to client");
 						return;
 					}
@@ -86,4 +86,18 @@ class Peer implements Runnable
 		}
 
 	}
+    /*
+     * Used for debugging; This method is stolen from Stack Overflow
+     */
+    final protected char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
 }

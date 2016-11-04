@@ -11,7 +11,7 @@ class P2PFile extends FSNode
 	long blockCount;
 	int lastBlockSize;
 	byte[][] hash;
-    static List<P2PFile> files;
+	static ArrayList<P2PFile> files = new ArrayList<P2PFile>();
 
     public P2PFile(String path) throws Exception {
         this(new File(path));
